@@ -1,0 +1,54 @@
+<h2>GSFC Jobs</h2>
+<div ng-controller="GsfcCtrl">
+	<div class="input-append">
+		<input type="text" ng-model="query_gsfc" ng-change="search()" class="input search-query"
+			placeholder="Search">
+		<span class="add-on"><i class="icon-search"></i></span>
+	</div>
+
+	<table class="table table-striped table-bordere d">
+		<thead>
+			<th >Image</th>
+			<th id="cluster">Cluster &nbsp;<a ng-click="sort_by('cluster')"><i class="icon-sort"></i></a></th>
+			<th id="molecule">Molecule &nbsp;<a ng-click="sort_by('molecule')"><i class="icon-sort"></i></a></th>
+			<th id="site">Site &nbsp;<a ng-click="sort_by('site_type')"><i class="icon-sort"></i></a></th>
+			<th id="spin">Spin &nbsp;<a ng-click="sort_by('spin')"><i class="icon-sort"></i></a></th>
+			<th id="scfe_energy">SCFE &nbsp;<a ng-click="sort_by('scfe_energy')"><i class="icon-sort"></i></a></th>
+			<th id="total_force">Force &nbsp;<a ng-click="sort_by('total_force')"><i class="icon-sort"></i></a></th>
+			<th id="band_gap">Band Gap &nbsp;<a ng-click="sort_by('band_gap')"><i class="icon-sort"></i></a></th>
+			<th id="spin_contamination">Spin Error(%) &nbsp;<a ng-click="sort_by('spin_contamination')"><i class="icon-sort"></i></a></th>
+		</thead>
+		<tbody>
+			<tr ng-repeat="gsfc_job in paged_gsfc_jobs[currentPage] | orderBy:sortingOrder:reverse" >
+				<td>Pictures</td>
+				<td>{{gsfc_job.cluster.toUpperCase()}}</td>
+				<td>{{gsfc_job.molecule.toUpperCase()}}</td>
+				<td>{{gsfc_job.site_type.toUpperCase()}}</td>
+				<td>{{gsfc_job.spin}}</td>
+				<td>{{format_decimal(gsfc_job.scfe_energy,4)}}</td>
+				<td>{{format_decimal(gsfc_job.total_force,4)}}</td>
+				<td>{{gsfc_job.band_gap}}</td>
+				<td>{{gsfc_job.spin_contamination}}</td>
+			</tr>
+		</tbody>
+		<tfoot>
+			<td colspan="9">
+				<div class="pagination pull-right">
+					<ul>
+						<li ng-class="{disabled: currentPage==0}">
+							<a href ng-click="prevPage()"><< Prev</a>
+						</li>
+						<li ng-repeat="n in range(paged_gsfc_jobs.length)" ng-class="{active: n==currentPage}"
+							ng-click="setPage(n)">
+							<a href >{{n+1}}</a>	
+						</li>
+						<li ng-class="{disabled: currentPage==paged_gsfc_jobs.length-1}">
+							<a href ng-click="nextPage()">Next >></a>
+						</li>
+					</ul>
+				</div>
+			</td>
+		</tfoot>
+	</table>
+</div>
+

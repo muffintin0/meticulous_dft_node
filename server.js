@@ -9,15 +9,29 @@ var express = require('express')
   , http = require('http')
   , path = require('path');
   
-var mysql      = require('mysql');
-var connection = mysql.createConnection({
-  host     : 'localhost',
-  user     : 'root',
-  password : 'Cassano0422030',
-  database: 'research',
-});
+var mysql      = require('mysql')
+	,	config = require('./config/config');
+var connection = mysql.createConnection(config.mysql);
 
-connection.connect();
+function handleDisconnect(connection) {
+  connection.on('error', function(err) {
+    if (!err.fatal) {
+      return;
+    }
+
+    if (err.code !== 'PROTOCOL_CONNECTION_LOST') {
+      throw err;
+    }
+
+    console.log('Re-connecting lost connection: ' + err.stack);
+
+    connection = mysql.createConnection(connection.config);
+    handleDisconnect(connection);
+    connection.connect();
+  });
+}
+
+handleDisconnect(connection);
 
 var database = require('./models/mysql');
 var app = express();
