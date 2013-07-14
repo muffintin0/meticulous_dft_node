@@ -42,7 +42,9 @@ app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
 app.use(express.favicon());
 app.use(express.logger('dev'));
+app.use(express.limit('1mb'));
 app.use(express.bodyParser());
+app.use(express.cookieParser());
 app.use(express.methodOverride());
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
@@ -56,7 +58,19 @@ if ('development' == app.get('env')) {
 app.get('/users', user.list);
 
 app.get("/gsfcjobs", function(req, res) {
-  database.findAllContinents(connection,function(err, results) {
+  database.findAllGsfcJobs(connection,function(err, results) {
+    if (err)
+      throw err; // or return an error message, or something
+    else
+      res.send(results); // as a demo, we'll send back the results to the client;
+                         // if you pass an object to 'res.send()', it will send
+                         // a JSON-response.
+  });
+});
+
+app.get("/gsfcjobs/:id",function(req,res){
+	var id = req.param('id', ''); 
+  database.findGsfcJobById(connection,id, function(err, results) {
     if (err)
       throw err; // or return an error message, or something
     else

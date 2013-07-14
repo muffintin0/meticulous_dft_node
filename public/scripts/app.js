@@ -11,6 +11,10 @@ angular.module('Mdft', ['gsfcServices'])
       	templateUrl: 'views/gsfc.html',
       	controller: 'GsfcCtrl'
       })
+      .when('/jaguar-forced-optimization/:id', {
+      	templateUrl: 'views/gsfc-detail.html', 
+      	controller: GsfcDetailCtrl
+      })
       .otherwise({
         redirectTo: '/'
       });

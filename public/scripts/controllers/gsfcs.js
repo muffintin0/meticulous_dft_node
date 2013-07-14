@@ -1,31 +1,36 @@
 'use strict';
 
-function GsfcCtrl($scope,$filter,Gsfc){
-	$scope.gsfc_jobs = Gsfc.query(function(){
-		$.each($scope.gsfc_jobs, function(index,gsfc_job){
-			$scope.band_gap(gsfc_job);
-			$scope.spin_contamination(gsfc_job);
-		});	
-		$scope.search();
-	});
-		
-	$scope.band_gap = function(gsfc_job){
+//help function
+var MDftHelper = MDftHelper || {}
+
+MDftHelper.band_gap = function(gsfc_job){
 		var alpha_gap = gsfc_job.alpha_lumo - gsfc_job.alpha_homo;
 		var beta_gap = gsfc_job.beta_lumo - gsfc_job.beta_homo;
 		var band_gap
 		if (alpha_gap < beta_gap) band_gap = alpha_gap.toFixed(5);
 		else band_gap = beta_gap.toFixed(4);
 		gsfc_job.band_gap = band_gap;
-	}
-	
-	$scope.format_decimal = function(val,num){
-		return parseFloat(val).toFixed(num); 
-	}
-	
-	$scope.spin_contamination = function(gsfc_job){
+}
+
+MDftHelper.spin_contamination = function(gsfc_job){
 		gsfc_job.spin_contamination = ((1- (gsfc_job.unrestricted_spin_guess/gsfc_job.unrestricted_spin_real))*100).toFixed(1);
-	}
-	
+}
+
+MDftHelper.format_decimal = function(val,num){
+		return parseFloat(val).toFixed(num); 
+}
+
+function GsfcCtrl($scope,$filter,Gsfc){
+	$scope.gsfc_jobs = Gsfc.query(function(){
+		$.each($scope.gsfc_jobs, function(index,gsfc_job){
+			MDftHelper.band_gap(gsfc_job);
+			MDftHelper.spin_contamination(gsfc_job);
+		});	
+		$scope.search();
+	});
+			
+	$scope.format_decimal = MDftHelper.format_decimal;
+		
 	$scope.sortingOrder = 'unique_name';
 	$scope.searchAttributes = ['unique_name', 'cluster', 'moleclue', 'site_type', 'spin', 'scfe_energy',
 		'total_force', 'band_gap', 'spin_contamination'];
@@ -117,5 +122,14 @@ function GsfcCtrl($scope,$filter,Gsfc){
 		}
 	}
 	
+}
+
+
+function GsfcDetailCtrl($scope, $routeParams, Gsfc){
+	$scope.gsfc_job = Gsfc.get({id: $routeParams.id},function(gsfc_job){
+		MDftHelper.band_gap(gsfc_job);
+		MDftHelper.spin_contamination(gsfc_job);
+	});	
+	$scope.format_decimal = MDftHelper.format_decimal;
 }
 
